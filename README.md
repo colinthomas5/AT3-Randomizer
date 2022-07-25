@@ -13,7 +13,7 @@ To randomize your AT3 copy...
 ```
 • Run at3_random.exe
 • Point the program to the data folder you wish to randomize
-• The program will randomize the files within the data folder
+• The program will randomize the item location data within the data folder
 ```
 
 ## Contact

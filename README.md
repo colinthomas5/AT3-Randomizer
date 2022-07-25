@@ -25,6 +25,6 @@ If you have any feature suggestions or find any bugs, here is where you can find
 • Discord: colin#0615
 ```
 
-##Information
+## Information
 
 This program was written in Python 3.0 in Visual Studio 2019. Included are the project files used

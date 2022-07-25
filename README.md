@@ -11,9 +11,9 @@ In preparation to randomize your AT3 copy, backup your vanilla data folder from 
 To randomize your AT3 copy...
 
 ```
-* Run at3_random.exe
-* Point the program to the data folder you wish to randomize
-* The program will randomize the files within the data folder
+• Run at3_random.exe
+• Point the program to the data folder you wish to randomize
+• The program will randomize the files within the data folder
 ```
 
 ## Contact
@@ -21,6 +21,6 @@ To randomize your AT3 copy...
 If you have any feature suggestions or find any bugs, here is where you can find me
 
 ```
-* Twitter: @chatterteethsrc
-* Discord: colin#0615
+• Twitter: @chatterteethsrc
+• Discord: colin#0615
 ```

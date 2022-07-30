@@ -13,6 +13,7 @@ To randomize your AT3 copy...
 ```
 • Run at3_random.exe
 • Point the program to the data folder you wish to randomize
+• Give seed and spoiler log preferences
 • The program will randomize the item location data within the data folder
 ```
 

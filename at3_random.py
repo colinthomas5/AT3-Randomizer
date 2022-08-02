@@ -149,7 +149,7 @@ for area in fileList:
 							logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 							spoilerLog[logIndex] = logEntry
 				itemLocal.remove(itemLocal[randomNumber])
-			lines.append(line[c])
+		lines.append(line[c])
 		c += 1
 	openFile.seek(0)
 	openFile.truncate(0)

@@ -3,18 +3,17 @@ import random
 import os
 import sys
 
-
 #ADDED NPC RANDO, FIXED BUG THAT CAUSED AN ITEM TO DISAPPEAR FROM LOCAL ITEM POOL
 
 prefs = {}
 
 # List of files to be randomized within data folder
-fileList = ["\\castle_basement_master.pak", "\\castle_nightmare_master.pak", "\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
+fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\castle_nightmare_master.pak", "\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
 			"\\overworld_kingdom_master.pak", "\\overworld_mountain_cave_1.pak", "\\overworld_mountain_cave_3.pak", "\\overworld_mountain_cave_4.pak", "\\overworld_mountain_master.pak", "\\overworld_swamp_master.pak",
 			"\\overworld_wasteland_cave_1.pak", "\\temple_dream_master.pak", "\\temple_fear_master.pak", "\\temple_song_master.pak"]
 
 # Files that could be in fileList but are currently excluded
-#fileListExtras = ["\\overworld_lsp_cave.pak", "\\global.pak",]
+#fileListExtras = ["\\global.pak",]
 
 # Used for debugging, lists most files within data folder to scout for files that can be added to pooling and randomizing but aren't due to lack of items or NPCs
 #fileListComplete = ["\\arena_hairapes.pak", "\\autoload.pak", "\\15boss_crabdemon.pak", "\\boss_hairapes.pak", "\\boss_nightmare.pak", "\\boss_shadowfinn.pak", "\\castle_basement_master.pak",
@@ -34,8 +33,11 @@ defaultItemList = ["PickupChestItemKey\0", "PickupTreasureHuge\0", "PickupTrailM
 # Items that could be in itemList but are currently excluded
 #itemListExtras = ["PickupHealthOne\0\0\0\0"]
 
-# Items that could be added to the item pool, but are not found within the game via current methods or are only found in the shop, which can't currently be randomized
-#itemListSpecial = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0", "PickupEnchiridion"]
+# List of items to be removed in favor of items from itemListSpecial while using expanded item pool
+itemListReplaced = ["PickupTreasureSmall", "PickupTreasureBig\0\0", "PickupDemonHeart\0\0\0", "PickupNuts\0\0\0\0\0\0\0\0\0", "PickupFruits\0\0\0\0\0\0\0"]
+
+# Items that could be added to the item pool, but are not found within the game via current methods or are only found in the shop, which can't currently be randomized. Used for expanded item pool
+itemListSpecial = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0", "PickupEnchiridion"]
 
 # List of NPCs to check randomization; Null char added to each entry to maintain consistent length of 57
 NPCList = ["Gunter\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_gunter.pak\0\0\0\0\0\0\0\0\0\0\0", "PartyPat\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partypat.pak\0\0\0\0\0\0\0\0\0", "Demon\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_nightospheredemon.pak"
@@ -95,29 +97,28 @@ print("Randomizing " + args.folder + "...")
 dir = args.folder
 if args.seed == "":
 	args.seed = random.random()
-	random.seed(args.seed)
+	prefs["customSeed"] = args.seed
 else:
-	random.seed(args.seed, version=1)
 	prefs["customSeed"] = args.seed
 if args.no_items_randomization == True:
 	prefs["itemRandomization"] = 0
-if args.standard_items_randomization == True:
+elif args.standard_items_randomization == True:
 	prefs["itemRandomization"] = 1
-if args.expanded_items_randomization == True:
+elif args.expanded_items_randomization == True:
 	prefs["itemRandomization"] = 2
-if args.custom_items_randomization == True:
+elif args.custom_items_randomization == True:
 	prefs["itemRandomization"] = 3
 	if args.custom_items == "":
 		print("Error: Custom item pool not specified")
 		sys.exit(1)
 	else:
 		itemList = args.custom_items.split(",")
-if args.custom_items == "":
+if args.custom_items == None:
 	itemList = defaultItemList
-	if args.no_logic == True:
-		prefs["itemLogic"] = 0
-	if args.standard_logic == True:
-		prefs["itemLogic"] = 1
+if args.no_logic == True:
+	prefs["itemLogic"] = 0
+if args.standard_logic == True:
+	prefs["itemLogic"] = 1
 if args.no_npcs_randomization == True:
 	prefs["npcRandomization"] = 0
 if args.standard_npcs_randomization == True:
@@ -136,213 +137,226 @@ else:
 	prefs["spoilerLog"] = 0
 
 
-
-
 # Builds local item pool while replacing items with placeholder text to be changed into randomized items; placeholder text named to have length of 19
-for area in fileList:
-	path = dir + area
-	print("Now generating pool from: ", path)
-	openFile = open(path, "r+", encoding="latin-1", newline='')
-	line = openFile.readlines()
-	areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
-	c = 0
-	lines = []
-	if prefs["spoilerLog"] is 1:
-		spoilerLog.append(areaClean)
-	for location in line:
-		if area == "\\castle_nightmare_master.pak":
-			while "PickupSweater\0\0\0\0\0\0" in location:
-				itemLocal.append("PickupSweater\0\0\0\0\0\0")
-				replacement = line[c].replace("PickupSweater\0\0\0\0\0\0", "placeholdertextomg!", 1)
-				line[c] = replacement.lstrip('')
-				location = line[c]
-				print("Replaced PickupSweater\0\0\0\0\0\0 with placeholder")
-				if prefs["spoilerLog"] is 1:
-					spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
-#		elif area == "\\global.pak":
-#			for item in shopList:
-#				while item in location:
-#					itemLocal.append(item.ljust(19, "\0"))
-#					replacement = line[c].replace(item, "placeholdertextomg!", 1)
-#					line[c] = replacement.lstrip('')
-#					location = line[c]
-#					print("Added ", item, " to item pool")
-#					if spoiler is 1:
-#						i = item.ljust(19, "\0") + " ->  "
-#						spoilerLog.append(i)
-		else:
-			for item in itemList:
-				while item in location:
-					itemLocal.append(item.ljust(19))
-					replacement = line[c].replace(item, "placeholdertextomg!", 1)
-					line[c] = replacement.lstrip('')
-					location = line[c]
-					print("Added ", item, " to item pool")
-					if prefs["spoilerLog"] is 1:
-						i = item + " ->  "
-						spoilerLog.append(i)
-			if prefs["npcRandomization"] is 1:
+def randomize(dir):
+	random.seed(prefs["customSeed"])
+	if prefs["itemLogic"] == 0:
+		fileList.remove("\\overworld_lsp_cave.pak")
+	for area in fileList:
+		path = dir + area
+		print("Now generating pool from: ", path)
+		openFile = open(path, "r+", encoding="latin-1", newline='')
+		lines = openFile.readlines()
+		areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
+		c = -1
+		if prefs["spoilerLog"] == 1:
+			spoilerLog.append(areaClean)
+		if prefs["itemRandomization"] != 0:
+			for location in lines:
+				c += 1
+				if area == "\\castle_nightmare_master.pak" and prefs["itemLogic"] != 0:
+					while "PickupSweater\0\0\0\0\0\0" in location:
+						itemLocal.append("PickupSweater\0\0\0\0\0\0")
+						replacement = lines[c].replace("PickupSweater\0\0\0\0\0\0", "placeholdertextomg!", 1)
+						lines[c] = replacement.lstrip('')
+						location = lines[c]
+						print("Replaced PickupSweater\0\0\0\0\0\0 with placeholder")
+						if prefs["spoilerLog"] == 1:
+							spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
+#				elif area == "\\global.pak":
+#					for item in shopList:
+#						while item in location:
+#							itemLocal.append(item.ljust(19, "\0"))
+#							replacement = lines[c].replace(item, "placeholdertextomg!", 1)
+#							lines[c] = replacement.lstrip('')
+#							location = lines[c]
+#							print("Added ", item, " to item pool")
+#							if spoiler is 1:
+#								i = item.ljust(19, "\0") + " ->  "
+#								spoilerLog.append(i)
+				else:
+					for item in itemList:
+						while item in location:
+							itemLocal.append(item.ljust(19))
+							replacement = lines[c].replace(item, "placeholdertextomg!", 1)
+							lines[c] = replacement.lstrip('')
+							location = lines[c]
+							print("Added ", item, " to item pool")
+							if prefs["spoilerLog"] == 1:
+								i = item + " ->  "
+								spoilerLog.append(i)
+		if prefs["npcRandomization"] != 0:
+			c = -1
+			for location in lines:
+				c += 1
 				for nonplay in NPCList:
 					while nonplay in location:
 						NPCLocal.append(nonplay)
-						replacement = line[c].replace(nonplay, "creatingafiftysevencharacterplaceholderisnotveryfunforme!")
-						line[c] = replacement.lstrip('')
-						location = line[c]
+						replacement = lines[c].replace(nonplay, "creatingafiftysevencharacterplaceholderisnotveryfunforme!")
+						lines[c] = replacement.lstrip('')
+						location = lines[c]
 						print("Added ", nonplay[:19], " to NPC pool")
-						if prefs["spoilerLog"] is 1:
+						if prefs["spoilerLog"] == 1:
 							n = nonplay[:19] + " ->  "
 							spoilerLog.append(n)
 				for nonplay in NPCList2:
 					while nonplay in location:
 						NPCLocal.append(nonplay)
-						replacement = line[c].replace(nonplay, "creatingafiftysevencharacterplaceholderisnotveryfunforme!")
-						line[c] = replacement.lstrip('')
-						location = line[c]
+						replacement = lines[c].replace(nonplay, "creatingafiftysevencharacterplaceholderisnotveryfunforme!")
+						lines[c] = replacement.lstrip('')
+						location = lines[c]
 						print("Added ", nonplay[:19], " to NPC pool")
-						if prefs["spoilerLog"] is 1:
+						if prefs["spoilerLog"] == 1:
 							n = nonplay[:19] + " ->  "
 							spoilerLog.append(n)
-		lines.append(line[c])
-		c += 1
-	if prefs["spoilerLog"] is 1:
-		spoilerLog.append( "\n")
-	openFile.seek(0)
-	openFile.truncate(0)
-	for line in lines:
-		openFile.write(line)
-	openFile.close()
-	print("Successfully pooled from ", path)
+		if prefs["spoilerLog"] == 1:
+			spoilerLog.append( "\n")
+		openFile.seek(0)
+		openFile.truncate(0)
+		for line in lines:
+			openFile.write(line)
+		openFile.close()
+		print("Successfully pooled from ", path)
+	
+# Uses expanded item pool if selected
+	if prefs["itemRandomization"] == 2:
+			for filler in itemListReplaced:
+				while filler in itemLocal:
+					fillerSpot = itemLocal.index(filler)
+					replacement = itemLocal[fillerSpot].replace(filler, itemListSpecial[random.randint(0, len(itemListSpecial)-1)])
+					itemLocal[fillerSpot] = replacement
 
 # Replaces placeholders with actual items from local item pool
-for area in fileList:
-	path = dir + area
-	print("Now randomizing ", path)
-	openFile = open(path, "r+", encoding="latin-1", newline='')
-	line = openFile.readlines()
-	areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
-	flamboTree = "placeholdertextomg!\0\0\0\0\0dry_tree.wf3d"
-	heroRock = "global:forest_pickup_heavy_1.wf3d\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" + bytes.fromhex("01").decode("latin-1") + "\0\0\0placeholdertextomg!"
-	c = 0
-	s = 0
-	lines = []
-	for location in line:
-		if area == "\\castle_nightmare_master.pak":
-			while "placeholdertextomg!" in location:
-				length = len(itemLocal)
-				randomNumber = random.randint(0, length-1)
-				while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0" or itemLocal[randomNumber] == "PickupHeroGauntlet\0":
-					randomNumber = random.randint(0, length-1)
-				replacement = line[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
-				line[c] = replacement.lstrip(' ')
-				location = line[c]
-				print("Replaced placeholder with ", itemLocal[randomNumber])
-				if prefs["spoilerLog"] is 1:
-					for entry in spoilerLog:
-						if entry == areaClean:
-							s += 1
-							logIndex = int(spoilerLog.index(entry) + s)
-							logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-							spoilerLog[logIndex] = logEntry
-				itemLocal.remove(itemLocal[randomNumber])
-#		elif area == "\\global.pak":
-#			while "placeholdertextomg!" in location:
-#				length = len(itemLocal)
-#				randomNumber = random.randint(0, length-1)
-#				replacementItem = itemLocal[randomNumber].rstrip("\0")
-#				replacement = line[c].replace("placeholdertextomg!", replacementItem, 1)
-#				line[c] = replacement.lstrip(' ')
-#				location = line[c]
-#				print("Replaced placeholder with ", itemLocal[randomNumber])
-#				if spoiler is 1:
-#					for entry in spoilerLog:
-#						if entry == areaClean:
-#							s += 1
-#							logIndex = int(spoilerLog.index(entry) + s)
-#							logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-#							spoilerLog[logIndex] = logEntry
-#				itemLocal.remove(itemLocal[randomNumber])
-		else:
-			while flamboTree in location:
-				length = len(itemLocal)
-				randomNumber = random.randint(0, length-1)
-				while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0":
-					randomNumber = random.randint(0, length-1)
-				replacement = line[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
-				line[c] = replacement.lstrip(' ')
-				location = line[c]
-#				print("Replaced placeholder with ", itemLocal[randomNumber])
-#				print("Dry tree worky")
-				if prefs["spoilerLog"] is 1:
-					for entry in spoilerLog:
-						if entry == areaClean:
-							s += 1
-							logIndex = int(spoilerLog.index(entry) + s)
-							logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-							spoilerLog[logIndex] = logEntry
-			while heroRock in location:
-				length = len(itemLocal)
-				randomNumber = random.randint(0, length-1)
-				while itemLocal[randomNumber] == "PickupHeroGauntlet\0":
-					randomNumber = random.randint(0, length-1)
-				replacement = line[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
-				line[c] = replacement.lstrip(' ')
-				location = line[c]
-#				print("Replaced placeholder with ", itemLocal[randomNumber])
-#				print("Heavy rock worky")
-				if prefs["spoilerLog"] is 1:
-					for entry in spoilerLog:
-						if entry == areaClean:
-							s += 1
-							logIndex = int(spoilerLog.index(entry) + s)
-							logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-							spoilerLog[logIndex] = logEntry
-			while "placeholdertextomg!" in location:
-				length = len(itemLocal)
-				randomNumber = random.randint(0, length-1)
-				replacement = line[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
-				line[c] = replacement.lstrip(' ')
-				location = line[c]
-#				print("Replaced placeholder with ", itemLocal[randomNumber])
-				if prefs["spoilerLog"] is 1:
-					for entry in spoilerLog:
-						if entry == areaClean:
-							s += 1
-							logIndex = int(spoilerLog.index(entry) + s)
-							logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-							spoilerLog[logIndex] = logEntry
-				itemLocal.remove(itemLocal[randomNumber])
-			if prefs["npcRandomization"] is 1:
-					while "creatingafiftysevencharacterplaceholderisnotveryfunforme!" in location:
-						length = len(NPCLocal)
+	for area in fileList:
+		path = dir + area
+		print("Now randomizing ", path)
+		openFile = open(path, "r+", encoding="latin-1", newline='')
+		lines = openFile.readlines()
+		areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
+		flamboTree = "placeholdertextomg!\0\0\0\0\0dry_tree.wf3d"
+		heroRock = "global:forest_pickup_heavy_1.wf3d\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" + bytes.fromhex("01").decode("latin-1") + "\0\0\0placeholdertextomg!"
+		c = 0
+		s = 0
+		for location in lines:
+			if prefs["itemLogic"] != 0:
+				if area == "\\castle_nightmare_master.pak":
+					while "placeholdertextomg!" in location:
+						length = len(itemLocal)
 						randomNumber = random.randint(0, length-1)
-						replacement = line[c].replace("creatingafiftysevencharacterplaceholderisnotveryfunforme!", NPCLocal[randomNumber], 1)
-						line[c] = replacement.lstrip(' ')
-						location = line[c]
-#						print("Replaced placeholder with ", NPCLocal[randomNumber])
-						if prefs["spoilerLog"] is 1:
+						while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0" or itemLocal[randomNumber] == "PickupHeroGauntlet\0":
+							randomNumber = random.randint(0, length-1)
+						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
+						lines[c] = replacement.lstrip(' ')
+						location = lines[c]
+	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
 									s += 1
 									logIndex = int(spoilerLog.index(entry) + s)
-									logEntry = spoilerLog[logIndex] + NPCLocal[randomNumber][:19] + "\n"
+									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 									spoilerLog[logIndex] = logEntry
-						NPCLocal.remove(NPCLocal[randomNumber])
-		lines.append(line[c])
-		c += 1
-	openFile.seek(0)
-	openFile.truncate(0)
-	for line in lines:
-		openFile.write(line)
-	openFile.close()
-	print("Successfully randomized ", path)
-if prefs["customSeed"] != "":
+						itemLocal.remove(itemLocal[randomNumber])
+	#			elif area == "\\global.pak":
+	#				while "placeholdertextomg!" in location:
+	#					length = len(itemLocal)
+	#					randomNumber = random.randint(0, length-1)
+	#					replacementItem = itemLocal[randomNumber].rstrip("\0")
+	#					replacement = lines[c].replace("placeholdertextomg!", replacementItem, 1)
+	#					lines[c] = replacement.lstrip(' ')
+	#					location = lines[c]
+	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+	#					if spoiler is 1:
+	#						for entry in spoilerLog:
+	#							if entry == areaClean:
+	#								s += 1
+	#								logIndex = int(spoilerLog.index(entry) + s)
+	#								logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+	#								spoilerLog[logIndex] = logEntry
+	#					itemLocal.remove(itemLocal[randomNumber])
+				else:
+					while flamboTree in location:
+						length = len(itemLocal)
+						randomNumber = random.randint(0, length-1)
+						while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0":
+							randomNumber = random.randint(0, length-1)
+						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
+						lines[c] = replacement.lstrip(' ')
+						location = lines[c]
+	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+	#					print("Dry tree worky")
+						if prefs["spoilerLog"] == 1:
+							for entry in spoilerLog:
+								if entry == areaClean:
+									s += 1
+									logIndex = int(spoilerLog.index(entry) + s)
+									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+									spoilerLog[logIndex] = logEntry
+					while heroRock in location and prefs["itemLogic"] != 0:
+						length = len(itemLocal)
+						randomNumber = random.randint(0, length-1)
+						while itemLocal[randomNumber] == "PickupHeroGauntlet\0":
+							randomNumber = random.randint(0, length-1)
+						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
+						lines[c] = replacement.lstrip(' ')
+						location = lines[c]
+	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+	#					print("Heavy rock worky")
+						if prefs["spoilerLog"] == 1:
+							for entry in spoilerLog:
+								if entry == areaClean:
+									s += 1
+									logIndex = int(spoilerLog.index(entry) + s)
+									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+									spoilerLog[logIndex] = logEntry
+					while "placeholdertextomg!" in location:
+						length = len(itemLocal)
+						randomNumber = random.randint(0, length-1)
+						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
+						lines[c] = replacement.lstrip(' ')
+						location = lines[c]
+	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+						if prefs["spoilerLog"] == 1:
+							for entry in spoilerLog:
+								if entry == areaClean:
+									s += 1
+									logIndex = int(spoilerLog.index(entry) + s)
+									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+									spoilerLog[logIndex] = logEntry
+						itemLocal.remove(itemLocal[randomNumber])
+			c += 1
+		c = 0
+		for location in lines:
+			if prefs["npcRandomization"] != 0:
+				while "creatingafiftysevencharacterplaceholderisnotveryfunforme!" in location:
+					length = len(NPCLocal)
+					randomNumber = random.randint(0, length-1)
+					replacement = lines[c].replace("creatingafiftysevencharacterplaceholderisnotveryfunforme!", NPCLocal[randomNumber], 1)
+					lines[c] = replacement.lstrip(' ')
+					location = lines[c]
+					print("Replaced placeholder with ", NPCLocal[randomNumber])
+					if prefs["spoilerLog"] == 1:
+						for entry in spoilerLog:
+							if entry == areaClean:
+								s += 1
+								logIndex = int(spoilerLog.index(entry) + s)
+								logEntry = spoilerLog[logIndex] + NPCLocal[randomNumber][:19] + "\n"
+								spoilerLog[logIndex] = logEntry
+					NPCLocal.remove(NPCLocal[randomNumber])
+			c += 1
+		openFile.seek(0)
+		openFile.truncate(0)
+		for line in lines:
+			openFile.write(line)
+		openFile.close()
+		print("Successfully randomized ", path)
 	print("Your seed is: ", prefs["customSeed"])
-if prefs["spoilerLog"] is 1:
-	logPath = os.getcwd() + "\\spoiler.log"
-	log = open(logPath, 'w')
-	for entry in spoilerLog:
-		log.write(str(entry))
-	print("Log saved to ", os.getcwd(), "\\spoiler.log")
-	log.close()
-input("Randomization complete! Press enter or exit the window to close.")
-
+	if prefs["spoilerLog"] == 1:
+		logPath = os.getcwd() + "\\spoiler.log"
+		log = open(logPath, 'w')
+		for entry in spoilerLog:
+			log.write(str(entry))
+		print("Log saved to ", os.getcwd(), "\\spoiler.log")
+		log.close()
+	input("Randomization complete! Press enter or exit the window to close.")
+randomize(dir)

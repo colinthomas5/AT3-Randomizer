@@ -148,19 +148,20 @@ def randomize(dir):
 		openFile = open(path, "r+", encoding="latin-1", newline='')
 		lines = openFile.readlines()
 		areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
-		c = -1
+		c = 0
 		if prefs["spoilerLog"] == 1:
 			spoilerLog.append(areaClean)
 		if prefs["itemRandomization"] != 0:
+			placeholder = "placeholdertextomg0"
 			for location in lines:
-				c += 1
+				beenHere = c
 				if area == "\\castle_nightmare_master.pak" and prefs["itemLogic"] != 0:
 					while "PickupSweater\0\0\0\0\0\0" in location:
 						itemLocal.append("PickupSweater\0\0\0\0\0\0")
-						replacement = lines[c].replace("PickupSweater\0\0\0\0\0\0", "placeholdertextomg!", 1)
+						replacement = lines[c].replace("PickupSweater\0\0\0\0\0\0", placeholder, 1)
 						lines[c] = replacement.lstrip('')
 						location = lines[c]
-						print("Replaced PickupSweater\0\0\0\0\0\0 with placeholder")
+						print("Added PickupSweater\0\0\0\0\0\0 to item pool")
 						if prefs["spoilerLog"] == 1:
 							spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
 #				elif area == "\\global.pak":
@@ -177,38 +178,35 @@ def randomize(dir):
 				else:
 					for item in itemList:
 						while item in location:
+							placeholder = "placeholdertextomg" + str(beenHere - c)
 							itemLocal.append(item.ljust(19))
-							replacement = lines[c].replace(item, "placeholdertextomg!", 1)
+							replacement = lines[c].replace(item, placeholder, 1)
 							lines[c] = replacement.lstrip('')
 							location = lines[c]
 							print("Added ", item, " to item pool")
 							if prefs["spoilerLog"] == 1:
 								i = item + " ->  "
 								spoilerLog.append(i)
-		if prefs["npcRandomization"] != 0:
-			c = -1
-			for location in lines:
+							beenHere += 1
 				c += 1
-				for nonplay in NPCList:
+		if prefs["npcRandomization"] != 0:
+			c = 0
+			NPCListMaster = NPCList + NPCList2
+			for location in lines:
+				beenHere = c
+				for nonplay in NPCListMaster:
 					while nonplay in location:
+						placeholder = "creatingafiftysevencharacterplaceholderisnotveryfunforme" + str(beenHere - c)
 						NPCLocal.append(nonplay)
-						replacement = lines[c].replace(nonplay, "creatingafiftysevencharacterplaceholderisnotveryfunforme!")
+						replacement = lines[c].replace(nonplay, placeholder)
 						lines[c] = replacement.lstrip('')
 						location = lines[c]
 						print("Added ", nonplay[:19], " to NPC pool")
 						if prefs["spoilerLog"] == 1:
 							n = nonplay[:19] + " ->  "
 							spoilerLog.append(n)
-				for nonplay in NPCList2:
-					while nonplay in location:
-						NPCLocal.append(nonplay)
-						replacement = lines[c].replace(nonplay, "creatingafiftysevencharacterplaceholderisnotveryfunforme!")
-						lines[c] = replacement.lstrip('')
-						location = lines[c]
-						print("Added ", nonplay[:19], " to NPC pool")
-						if prefs["spoilerLog"] == 1:
-							n = nonplay[:19] + " ->  "
-							spoilerLog.append(n)
+						beenHere += 1
+				c += 1
 		if prefs["spoilerLog"] == 1:
 			spoilerLog.append( "\n")
 		openFile.seek(0)
@@ -233,22 +231,22 @@ def randomize(dir):
 		openFile = open(path, "r+", encoding="latin-1", newline='')
 		lines = openFile.readlines()
 		areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
-		flamboTree = "placeholdertextomg!\0\0\0\0\0dry_tree.wf3d"
-		heroRock = "global:forest_pickup_heavy_1.wf3d\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" + bytes.fromhex("01").decode("latin-1") + "\0\0\0placeholdertextomg!"
+		flamboTreeList = ["placeholdertextomg0\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg1\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg2\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg3\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg4\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg5\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg6\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg7\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg8\0\0\0\0\0dry_tree.wf3d", "placeholdertextomg9\0\0\0\0\0dry_tree.wf3d"]
+		heroRock = "global:forest_pickup_heavy_1.wf3d\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" + bytes.fromhex("01").decode("latin-1") + "\0\0\0placeholdertextomg"
 		c = 0
 		s = 0
 		for location in lines:
 			if prefs["itemLogic"] != 0:
 				if area == "\\castle_nightmare_master.pak":
-					while "placeholdertextomg!" in location:
+					while "placeholdertextomg0" in location:
 						length = len(itemLocal)
 						randomNumber = random.randint(0, length-1)
 						while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0" or itemLocal[randomNumber] == "PickupHeroGauntlet\0":
 							randomNumber = random.randint(0, length-1)
-						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
+						replacement = lines[c].replace("placeholdertextomg0", itemLocal[randomNumber], 1)
 						lines[c] = replacement.lstrip(' ')
 						location = lines[c]
-	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+#						print("Replaced placeholder with ", itemLocal[randomNumber])
 						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
@@ -257,65 +255,82 @@ def randomize(dir):
 									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 									spoilerLog[logIndex] = logEntry
 						itemLocal.remove(itemLocal[randomNumber])
-	#			elif area == "\\global.pak":
-	#				while "placeholdertextomg!" in location:
-	#					length = len(itemLocal)
-	#					randomNumber = random.randint(0, length-1)
-	#					replacementItem = itemLocal[randomNumber].rstrip("\0")
-	#					replacement = lines[c].replace("placeholdertextomg!", replacementItem, 1)
-	#					lines[c] = replacement.lstrip(' ')
-	#					location = lines[c]
-	#					print("Replaced placeholder with ", itemLocal[randomNumber])
-	#					if spoiler is 1:
-	#						for entry in spoilerLog:
-	#							if entry == areaClean:
-	#								s += 1
-	#								logIndex = int(spoilerLog.index(entry) + s)
-	#								logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-	#								spoilerLog[logIndex] = logEntry
-	#					itemLocal.remove(itemLocal[randomNumber])
-				else:
-					while flamboTree in location:
-						length = len(itemLocal)
-						randomNumber = random.randint(0, length-1)
-						while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0":
+#				elif area == "\\global.pak":
+#					j = 0
+#					while j < 10:
+#						tempPlaceholder = "placeholdertextomg" + str(j)
+#						while tempPlaceholder in location:
+#							length = len(itemLocal)
+#							randomNumber = random.randint(0, length-1)
+#							replacementItem = itemLocal[randomNumber].rstrip("\0")
+#							replacement = lines[c].replace("placeholdertextomg!",replacementItem, 1)	
+#							lines[c] = replacement.lstrip(' ')
+#							location = lines[c]
+#							print("Replaced placeholder with ", itemLocal[randomNumber])
+#							if spoiler is 1:
+#								for entry in spoilerLog:
+#									if entry == areaClean:
+#										s += 1
+#										logIndex = int(spoilerLog.index(entry) + s)
+#										logEntry = spoilerLog[logIndex] + itemLoca[randomNumber] + "\n"	
+#										spoilerLog[logIndex] = logEntry
+#							itemLocal.remove(itemLocal[randomNumber])
+#						j += 1
+				for fireTrees in flamboTreeList:
+					while fireTrees in location:
+						j = 0
+						while j < 10:
+							tempPlaceholder = "placeholdertextomg" + str(j)
+							while tempPlaceholder in location:
+								length = len(itemLocal)
+								randomNumber = random.randint(0, length-1)
+								while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0":
+									randomNumber = random.randint(0, length-1)
+								replacement = lines[c].replace(tempPlaceholder, itemLocal[randomNumber], 1)
+								lines[c] = replacement.lstrip(' ')
+								location = lines[c]
+								print("Replaced placeholder with ", itemLocal[randomNumber])
+								print("Dry tree worky")
+								if prefs["spoilerLog"] == 1:
+									for entry in spoilerLog:
+										if entry == areaClean:
+											s += 1
+											logIndex = int(spoilerLog.index(entry) + s)
+											logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+											spoilerLog[logIndex] = logEntry
+							j += 1
+				while heroRock in location:
+					j = 0
+					while j < 10:
+						tempPlaceholder = "placeholdertextomg" + str(j)
+						while tempPlaceholder in location:
+							length = len(itemLocal)
 							randomNumber = random.randint(0, length-1)
-						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
-						lines[c] = replacement.lstrip(' ')
-						location = lines[c]
-	#					print("Replaced placeholder with ", itemLocal[randomNumber])
-	#					print("Dry tree worky")
-						if prefs["spoilerLog"] == 1:
-							for entry in spoilerLog:
-								if entry == areaClean:
-									s += 1
-									logIndex = int(spoilerLog.index(entry) + s)
-									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-									spoilerLog[logIndex] = logEntry
-					while heroRock in location and prefs["itemLogic"] != 0:
+							while itemLocal[randomNumber] == "PickupHeroGauntlet\0":
+								randomNumber = random.randint(0, length-1)
+							replacement = lines[c].replace(tempPlaceholder, itemLocal[randomNumber], 1)
+							lines[c] = replacement.lstrip(' ')
+							location = lines[c]
+							print("Replaced placeholder with ", itemLocal[randomNumber])
+							print("Heavy rock worky")
+							if prefs["spoilerLog"] == 1:
+								for entry in spoilerLog:
+									if entry == areaClean:
+										s += 1
+										logIndex = int(spoilerLog.index(entry) + s)
+										logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+										spoilerLog[logIndex] = logEntry
+						j += 1
+				j = 0
+				while j < 10:
+					tempPlaceholder = "placeholdertextomg" + str(j)
+					while tempPlaceholder in location:
 						length = len(itemLocal)
 						randomNumber = random.randint(0, length-1)
-						while itemLocal[randomNumber] == "PickupHeroGauntlet\0":
-							randomNumber = random.randint(0, length-1)
-						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
+						replacement = lines[c].replace(tempPlaceholder, itemLocal[randomNumber], 1)
 						lines[c] = replacement.lstrip(' ')
 						location = lines[c]
-	#					print("Replaced placeholder with ", itemLocal[randomNumber])
-	#					print("Heavy rock worky")
-						if prefs["spoilerLog"] == 1:
-							for entry in spoilerLog:
-								if entry == areaClean:
-									s += 1
-									logIndex = int(spoilerLog.index(entry) + s)
-									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-									spoilerLog[logIndex] = logEntry
-					while "placeholdertextomg!" in location:
-						length = len(itemLocal)
-						randomNumber = random.randint(0, length-1)
-						replacement = lines[c].replace("placeholdertextomg!", itemLocal[randomNumber], 1)
-						lines[c] = replacement.lstrip(' ')
-						location = lines[c]
-	#					print("Replaced placeholder with ", itemLocal[randomNumber])
+						print("Replaced placeholder with ", itemLocal[randomNumber])
 						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
@@ -324,25 +339,30 @@ def randomize(dir):
 									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 									spoilerLog[logIndex] = logEntry
 						itemLocal.remove(itemLocal[randomNumber])
+					j += 1
 			c += 1
 		c = 0
 		for location in lines:
 			if prefs["npcRandomization"] != 0:
-				while "creatingafiftysevencharacterplaceholderisnotveryfunforme!" in location:
-					length = len(NPCLocal)
-					randomNumber = random.randint(0, length-1)
-					replacement = lines[c].replace("creatingafiftysevencharacterplaceholderisnotveryfunforme!", NPCLocal[randomNumber], 1)
-					lines[c] = replacement.lstrip(' ')
-					location = lines[c]
-					print("Replaced placeholder with ", NPCLocal[randomNumber])
-					if prefs["spoilerLog"] == 1:
-						for entry in spoilerLog:
-							if entry == areaClean:
-								s += 1
-								logIndex = int(spoilerLog.index(entry) + s)
-								logEntry = spoilerLog[logIndex] + NPCLocal[randomNumber][:19] + "\n"
-								spoilerLog[logIndex] = logEntry
-					NPCLocal.remove(NPCLocal[randomNumber])
+				j = 0
+				while j < 10:
+					tempPlaceholder = "creatingafiftysevencharacterplaceholderisnotveryfunforme" + str(j)
+					while tempPlaceholder in location:
+						length = len(NPCLocal)
+						randomNumber = random.randint(0, length-1)
+						replacement = lines[c].replace(tempPlaceholder, NPCLocal[randomNumber], 1)
+						lines[c] = replacement.lstrip(' ')
+						location = lines[c]
+						print("Replaced placeholder with ", NPCLocal[randomNumber][:19])
+						if prefs["spoilerLog"] == 1:
+							for entry in spoilerLog:
+								if entry == areaClean:
+									s += 1
+									logIndex = int(spoilerLog.index(entry) + s)
+									logEntry = spoilerLog[logIndex] + NPCLocal[randomNumber][:19] + "\n"
+									spoilerLog[logIndex] = logEntry
+						NPCLocal.remove(NPCLocal[randomNumber])
+					j += 1
 			c += 1
 		openFile.seek(0)
 		openFile.truncate(0)
@@ -359,4 +379,5 @@ def randomize(dir):
 		print("Log saved to ", os.getcwd(), "\\spoiler.log")
 		log.close()
 	input("Randomization complete! Press enter or exit the window to close.")
+
 randomize(dir)

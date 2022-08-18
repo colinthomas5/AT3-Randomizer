@@ -1,11 +1,11 @@
-import promptlib
+import argparse
 import random
 import os
-import argparse
+import sys
 
 #ADDED NPC RANDO, FIXED BUG THAT CAUSED AN ITEM TO DISAPPEAR FROM LOCAL ITEM POOL
 
-prompter = promptlib.Files()
+prefs = {}
 
 # List of files to be randomized within data folder
 fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\castle_nightmare_master.pak", "\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
@@ -26,7 +26,7 @@ fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\castl
 #			"\\temple_dream_master.pak", "\\temple_fear_master.pak", "\\temple_song_master.pak", "\\temples.pak"]
 
 # List of items to check randomization; Null char added to each entry to maintain a consistent length of 19
-itemList = ["PickupChestItemKey\0", "PickupTreasureHuge\0", "PickupTrailMix\0\0\0\0\0", "PickupSpareThumps\0\0", "PickupTrailMix3\0\0\0\0", "PickupMeat\0\0\0\0\0\0\0\0\0", "PickupHeartPiece\0\0\0", 
+defaultItemList = ["PickupChestItemKey\0", "PickupTreasureHuge\0", "PickupTrailMix\0\0\0\0\0", "PickupSpareThumps\0\0", "PickupTrailMix3\0\0\0\0", "PickupMeat\0\0\0\0\0\0\0\0\0", "PickupHeartPiece\0\0\0", 
 			"PickupPencil\0\0\0\0\0\0\0", "PickupSweater\0\0\0\0\0\0", "PickupMapPaper\0\0\0\0\0", "PickupPieFairy\0\0\0\0\0", "PickupChestItemRBK\0", "PickupTreasureSmall", "PickupTreasureBig\0\0", "PickupDemonHeart\0\0\0", "PickupNuts\0\0\0\0\0\0\0\0\0", 
 			"PickupFruits\0\0\0\0\0\0\0", "PickupGumGlobe\0\0\0\0\0", "PickupWoodPlank\0\0\0\0", "PickupPlasticBag\0\0\0", "PickupFruitStack\0\0\0", "PickupHeroGauntlet\0", "PickupTrailMix1\0\0\0\0", "PickupTrailMix2\0\0\0\0", "PickupTrailMix3\0\0\0\0", "PickupTrailMix4\0\0\0\0", "PickupGrabbyHand\0\0\0",]
 
@@ -69,46 +69,78 @@ itemLocal = []
 # List of local NPC pool
 NPCLocal = []
 
+itemList = []
+
 # Choose data folder to randomize, initializes seed and spoiler log
-print("Choose the AT3 data folder that you wish to randomize.")
-dir = prompter.dir()
-seed = input("Type the seed you wish to use (Leave blank to enter a random seed): ")
-customSeed = 2
-if seed == "":
-	seed = random.random()
-	random.seed(seed)
-	customSeed = 0
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--folder", help="The AT3 data folder to randomize", type=str, required=True)
+parser.add_argument("-s", "--seed", help="The custom seed to randomize with", type=str, required=False)
+item_group = parser.add_argument_group("Item randomization")
+ir = item_group.add_mutually_exclusive_group(required=True)
+ir.add_argument("-nir", "--no-items-randomization", help="Do not randomize items", action="store_true")
+ir.add_argument("-sir", "--standard-items-randomization", help="Use standard method of randomizing items", action="store_true")
+ir.add_argument("-eir", "--expanded-items-randomization", help="Use expanded method of randomizing items", action="store_true")
+ir.add_argument("-cir", "--custom-items-randomization", help="Use custom item pool to randomize items", action="store_true")
+item_group.add_argument("-ci", "--custom-items", help="The custom item pool to use (comma terminated)", type=str, required=False)
+il = item_group.add_mutually_exclusive_group(required=True)
+il.add_argument("-nl", "--no-logic", help="Do not randomize item logic", action="store_true")
+il.add_argument("-sl", "--standard-logic", help="Use standard method of randomizing item logic", action="store_true")
+npc_group = parser.add_argument_group("NPC randomization")
+nr = npc_group.add_mutually_exclusive_group(required=True)
+nr.add_argument("-nnr", "--no-npcs-randomization", help="Do not randomize NPCs", action="store_true")
+nr.add_argument("-snr", "--standard-npcs-randomization", help="Use standard method of randomizing NPCs", action="store_true")
+nr.add_argument("-cnr", "--custom-npcs-randomization", help="Use custom NPC pool to randomize NPCs", action="store_true")
+npc_group.add_argument("-cn", "--custom-npcs", help="The custom NPC pool to use (comma terminated)", type=str, required=False)
+parser.add_argument("-spl", "--spoiler-log", help="Output a spoiler log", action="store_true", default=False)
+args = parser.parse_args()
+print("Randomizing " + args.folder + "...")
+dir = args.folder
+if args.seed == "":
+	args.seed = random.random()
+	prefs["customSeed"] = args.seed
 else:
-	random.seed(seed, version=1)
-	customSeed = 1
-npc = 2
-while npc is 2:
-	randomNPC = input("Do you want to randomize NPC locations? (Y/N): ")
-	if randomNPC == "Y" or randomNPC == "y":
-		npc = 1
-	if randomNPC == "N" or randomNPC == "n":
-		npc = 0
-spoiler = 2
-while spoiler is 2:
-	createLog = input("Do you want a spoiler log to be generated? (Y/N): ")
-	if createLog == "Y" or createLog == "y":
-		logPath = os.getcwd() + "\\spoiler.log"
-		log = open(logPath, 'w')
-		logSeed = "seed: " + str(seed) + "\n \n"
-		spoilerLog = []
-		spoilerLog.append(logSeed)
-		spoiler = 1
-	if createLog == "N" or createLog == "n":
-		spoiler = 0
+	prefs["customSeed"] = args.seed
+if args.no_items_randomization == True:
+	prefs["itemRandomization"] = 0
+elif args.standard_items_randomization == True:
+	prefs["itemRandomization"] = 1
+elif args.expanded_items_randomization == True:
+	prefs["itemRandomization"] = 2
+elif args.custom_items_randomization == True:
+	prefs["itemRandomization"] = 3
+	if args.custom_items == "":
+		print("Error: Custom item pool not specified")
+		sys.exit(1)
+	else:
+		itemList = args.custom_items.split(",")
+if args.custom_items == None:
+	itemList = defaultItemList
+if args.no_logic == True:
+	prefs["itemLogic"] = 0
+if args.standard_logic == True:
+	prefs["itemLogic"] = 1
+if args.no_npcs_randomization == True:
+	prefs["npcRandomization"] = 0
+if args.standard_npcs_randomization == True:
+	prefs["npcRandomization"] = 1
+if args.custom_npcs_randomization == True:
+	prefs["npcRandomization"] = 2
+	# not implemented yet
+if args.spoiler_log == True:
+	prefs["spoilerLog"] = 1
+	logPath = os.getcwd() + "\\spoiler.log"
+	log = open(logPath, 'w')
+	logSeed = "seed: " + prefs["customSeed"] + "\n \n"
+	spoilerLog = []
+	spoilerLog.append(logSeed)
+else:
+	prefs["spoilerLog"] = 0
 
 
 # Builds local item pool while replacing items with placeholder text to be changed into randomized items; placeholder text named to have length of 19
-def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
-	seed = theSeed
-	if seed == "":
-		seed = random.random()
-		random.seed(seed)
-	if itemLogic is 0:
+def randomize(dir):
+	random.seed(prefs["customSeed"])
+	if prefs["itemLogic"] == 0:
 		fileList.remove("\\overworld_lsp_cave.pak")
 	for area in fileList:
 		path = dir + area
@@ -117,19 +149,19 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 		lines = openFile.readlines()
 		areaClean = area.lstrip("\\").rstrip(".pak") + ": \n"
 		c = -1
-		if spoiler is 1:
+		if prefs["spoilerLog"] == 1:
 			spoilerLog.append(areaClean)
-		if itemRando is not 0:
+		if prefs["itemRandomization"] != 0:
 			for location in lines:
 				c += 1
-				if area == "\\castle_nightmare_master.pak" and itemLogic is not 0:
+				if area == "\\castle_nightmare_master.pak" and prefs["itemLogic"] != 0:
 					while "PickupSweater\0\0\0\0\0\0" in location:
 						itemLocal.append("PickupSweater\0\0\0\0\0\0")
 						replacement = lines[c].replace("PickupSweater\0\0\0\0\0\0", "placeholdertextomg!", 1)
 						lines[c] = replacement.lstrip('')
 						location = lines[c]
 						print("Replaced PickupSweater\0\0\0\0\0\0 with placeholder")
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
 #				elif area == "\\global.pak":
 #					for item in shopList:
@@ -150,10 +182,10 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 							lines[c] = replacement.lstrip('')
 							location = lines[c]
 							print("Added ", item, " to item pool")
-							if spoiler is 1:
+							if prefs["spoilerLog"] == 1:
 								i = item + " ->  "
 								spoilerLog.append(i)
-		if npcRando is not 0:
+		if prefs["npcRandomization"] != 0:
 			c = -1
 			for location in lines:
 				c += 1
@@ -164,7 +196,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 						lines[c] = replacement.lstrip('')
 						location = lines[c]
 						print("Added ", nonplay[:19], " to NPC pool")
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							n = nonplay[:19] + " ->  "
 							spoilerLog.append(n)
 				for nonplay in NPCList2:
@@ -174,10 +206,10 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 						lines[c] = replacement.lstrip('')
 						location = lines[c]
 						print("Added ", nonplay[:19], " to NPC pool")
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							n = nonplay[:19] + " ->  "
 							spoilerLog.append(n)
-		if spoiler is 1:
+		if prefs["spoilerLog"] == 1:
 			spoilerLog.append( "\n")
 		openFile.seek(0)
 		openFile.truncate(0)
@@ -187,11 +219,11 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 		print("Successfully pooled from ", path)
 	
 # Uses expanded item pool if selected
-	if itemRando is 2:
+	if prefs["itemRandomization"] == 2:
 			for filler in itemListReplaced:
 				while filler in itemLocal:
 					fillerSpot = itemLocal.index(filler)
-					replacement = itemLocal[fillerSpot].replace(filler, itemListSpecial[random.randint(0, len(ItemListSpecial)-1)])
+					replacement = itemLocal[fillerSpot].replace(filler, itemListSpecial[random.randint(0, len(itemListSpecial)-1)])
 					itemLocal[fillerSpot] = replacement
 
 # Replaces placeholders with actual items from local item pool
@@ -206,7 +238,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 		c = 0
 		s = 0
 		for location in lines:
-			if itemLogic is not 0:
+			if prefs["itemLogic"] != 0:
 				if area == "\\castle_nightmare_master.pak":
 					while "placeholdertextomg!" in location:
 						length = len(itemLocal)
@@ -217,7 +249,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 						lines[c] = replacement.lstrip(' ')
 						location = lines[c]
 	#					print("Replaced placeholder with ", itemLocal[randomNumber])
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
 									s += 1
@@ -253,14 +285,14 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 						location = lines[c]
 	#					print("Replaced placeholder with ", itemLocal[randomNumber])
 	#					print("Dry tree worky")
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
 									s += 1
 									logIndex = int(spoilerLog.index(entry) + s)
 									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 									spoilerLog[logIndex] = logEntry
-					while heroRock in location and itemLogic is not 0:
+					while heroRock in location and prefs["itemLogic"] != 0:
 						length = len(itemLocal)
 						randomNumber = random.randint(0, length-1)
 						while itemLocal[randomNumber] == "PickupHeroGauntlet\0":
@@ -270,7 +302,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 						location = lines[c]
 	#					print("Replaced placeholder with ", itemLocal[randomNumber])
 	#					print("Heavy rock worky")
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
 									s += 1
@@ -284,7 +316,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 						lines[c] = replacement.lstrip(' ')
 						location = lines[c]
 	#					print("Replaced placeholder with ", itemLocal[randomNumber])
-						if spoiler is 1:
+						if prefs["spoilerLog"] == 1:
 							for entry in spoilerLog:
 								if entry == areaClean:
 									s += 1
@@ -295,7 +327,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 			c += 1
 		c = 0
 		for location in lines:
-			if npcRando is not 0:
+			if prefs["npcRandomization"] != 0:
 				while "creatingafiftysevencharacterplaceholderisnotveryfunforme!" in location:
 					length = len(NPCLocal)
 					randomNumber = random.randint(0, length-1)
@@ -303,7 +335,7 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 					lines[c] = replacement.lstrip(' ')
 					location = lines[c]
 					print("Replaced placeholder with ", NPCLocal[randomNumber])
-					if spoiler is 1:
+					if prefs["spoilerLog"] == 1:
 						for entry in spoilerLog:
 							if entry == areaClean:
 								s += 1
@@ -318,8 +350,8 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 			openFile.write(line)
 		openFile.close()
 		print("Successfully randomized ", path)
-	print("Your seed is: ", seed)
-	if spoiler is 1:
+	print("Your seed is: ", prefs["customSeed"])
+	if prefs["spoilerLog"] == 1:
 		logPath = os.getcwd() + "\\spoiler.log"
 		log = open(logPath, 'w')
 		for entry in spoilerLog:
@@ -327,7 +359,4 @@ def randomize(dir, theSeed, spoiler, itemRando, itemLogic, npcRando):
 		print("Log saved to ", os.getcwd(), "\\spoiler.log")
 		log.close()
 	input("Randomization complete! Press enter or exit the window to close.")
-
-
-	
-randomize(dir, seed, spoiler, 1, 1, npc)
+randomize(dir)

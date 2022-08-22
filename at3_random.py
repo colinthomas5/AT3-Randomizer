@@ -3,12 +3,10 @@ import random
 import os
 import sys
 
-#ADDED NPC RANDO, FIXED BUG THAT CAUSED AN ITEM TO DISAPPEAR FROM LOCAL ITEM POOL
-
 prefs = {}
 
 # List of files to be randomized within data folder
-fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\castle_nightmare_master.pak", "\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
+fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
 			"\\overworld_kingdom_master.pak", "\\overworld_mountain_cave_1.pak", "\\overworld_mountain_cave_3.pak", "\\overworld_mountain_cave_4.pak", "\\overworld_mountain_master.pak", "\\overworld_swamp_master.pak",
 			"\\overworld_wasteland_cave_1.pak", "\\temple_dream_master.pak", "\\temple_fear_master.pak", "\\temple_song_master.pak"]
 
@@ -37,7 +35,7 @@ defaultItemList = ["PickupChestItemKey\0", "PickupTreasureHuge\0", "PickupTrailM
 itemListReplaced = ["PickupTreasureSmall", "PickupTreasureBig\0\0", "PickupDemonHeart\0\0\0", "PickupNuts\0\0\0\0\0\0\0\0\0", "PickupFruits\0\0\0\0\0\0\0"]
 
 # Items that could be added to the item pool, but are not found within the game via current methods or are only found in the shop, which can't currently be randomized. Used for expanded item pool
-itemListSpecial = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0", "PickupEnchiridion"]
+itemListSpecial = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupSlammyHand", "PickupSweater\0\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0", "PickupEnchiridion"]
 
 # List of NPCs to check randomization; Null char added to each entry to maintain consistent length of 57
 NPCList = ["Gunter\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_gunter.pak\0\0\0\0\0\0\0\0\0\0\0", "PartyPat\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partypat.pak\0\0\0\0\0\0\0\0\0", "Demon\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_nightospheredemon.pak"
@@ -137,7 +135,7 @@ else:
 	prefs["spoilerLog"] = 0
 
 
-# Builds local item pool while replacing items with placeholder text to be changed into randomized items; placeholder text named to have length of 19
+# Builds local item pool while replacing items with placeholder text to be changed into randomized items; item placeholder text named to have length of 19; npc placeholder text named to have a length of 57
 def randomize(dir):
 	random.seed(prefs["customSeed"])
 	if prefs["itemLogic"] == 0:
@@ -155,6 +153,7 @@ def randomize(dir):
 			placeholder = "placeholdertextomg0"
 			for location in lines:
 				beenHere = c
+# This exception about castle_nightmare_master.pak is currently depricated due to castle_nightmare_master.pak being taken out of standard map pool and PickupSweater being moved to expanded item pool
 				if area == "\\castle_nightmare_master.pak" and prefs["itemLogic"] != 0:
 					while "PickupSweater\0\0\0\0\0\0" in location:
 						itemLocal.append("PickupSweater\0\0\0\0\0\0")
@@ -164,6 +163,7 @@ def randomize(dir):
 						print("Added PickupSweater\0\0\0\0\0\0 to item pool")
 						if prefs["spoilerLog"] == 1:
 							spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
+# Currently unused shop randomization, functions however other factors in the game prevent it from being usable
 #				elif area == "\\global.pak":
 #					for item in shopList:
 #						while item in location:
@@ -176,6 +176,7 @@ def randomize(dir):
 #								i = item.ljust(19, "\0") + " ->  "
 #								spoilerLog.append(i)
 				else:
+# Takes items from desired items to be randomized and replaces them with a placeholder while adding them to the item pool
 					for item in itemList:
 						while item in location:
 							placeholder = "placeholdertextomg" + str(beenHere - c)
@@ -189,6 +190,7 @@ def randomize(dir):
 								spoilerLog.append(i)
 							beenHere += 1
 				c += 1
+# Takes NPCs and replaces them with a placeholder while adding them to the item pool
 		if prefs["npcRandomization"] != 0:
 			c = 0
 			NPCListMaster = NPCList + NPCList2
@@ -207,6 +209,7 @@ def randomize(dir):
 							spoilerLog.append(n)
 						beenHere += 1
 				c += 1
+# Writing to files
 		if prefs["spoilerLog"] == 1:
 			spoilerLog.append( "\n")
 		openFile.seek(0)
@@ -215,15 +218,15 @@ def randomize(dir):
 			openFile.write(line)
 		openFile.close()
 		print("Successfully pooled from ", path)
-	
 # Uses expanded item pool if selected
+	print(itemLocal)
 	if prefs["itemRandomization"] == 2:
-			for filler in itemListReplaced:
-				while filler in itemLocal:
-					fillerSpot = itemLocal.index(filler)
-					replacement = itemLocal[fillerSpot].replace(filler, itemListSpecial[random.randint(0, len(itemListSpecial)-1)])
+				while len(itemListSpecial) != 0:
+					fillerSpot = itemLocal.index("PickupChestItemKey\0")
+					fillerReplace = itemListSpecial[random.randint(0, len(itemListSpecial)-1)]
+					replacement = itemLocal[fillerSpot].replace("PickupChestItemKey\0", fillerReplace)
 					itemLocal[fillerSpot] = replacement
-
+					itemListSpecial.remove(fillerReplace)
 # Replaces placeholders with actual items from local item pool
 	for area in fileList:
 		path = dir + area
@@ -237,6 +240,7 @@ def randomize(dir):
 		s = 0
 		for location in lines:
 			if prefs["itemLogic"] != 0:
+# This exception about castle_nightmare_master.pak is currently depricated due to castle_nightmare_master.pak being taken out of standard map pool and PickupSweater being moved to expanded item pool
 				if area == "\\castle_nightmare_master.pak":
 					while "placeholdertextomg0" in location:
 						length = len(itemLocal)
@@ -255,6 +259,7 @@ def randomize(dir):
 									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 									spoilerLog[logIndex] = logEntry
 						itemLocal.remove(itemLocal[randomNumber])
+# Currently unused shop randomization, functions however other factors in the game prevent it from being usable
 #				elif area == "\\global.pak":
 #					j = 0
 #					while j < 10:
@@ -276,6 +281,8 @@ def randomize(dir):
 #										spoilerLog[logIndex] = logEntry
 #							itemLocal.remove(itemLocal[randomNumber])
 #						j += 1
+
+# Exception for Grabby Hand and Flambo under dead bushes
 				for fireTrees in flamboTreeList:
 					while fireTrees in location:
 						j = 0
@@ -284,7 +291,7 @@ def randomize(dir):
 							while tempPlaceholder in location:
 								length = len(itemLocal)
 								randomNumber = random.randint(0, length-1)
-								while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0":
+								while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0" or itemLocal[randomNumber] == "PickupFlambo\0\0\0\0\0\0\0":
 									randomNumber = random.randint(0, length-1)
 								replacement = lines[c].replace(tempPlaceholder, itemLocal[randomNumber], 1)
 								lines[c] = replacement.lstrip(' ')
@@ -299,6 +306,7 @@ def randomize(dir):
 											logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 											spoilerLog[logIndex] = logEntry
 							j += 1
+# Exception for Billy's Gauntlets under huge rocks
 				while heroRock in location:
 					j = 0
 					while j < 10:
@@ -321,26 +329,28 @@ def randomize(dir):
 										logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
 										spoilerLog[logIndex] = logEntry
 						j += 1
-				j = 0
-				while j < 10:
-					tempPlaceholder = "placeholdertextomg" + str(j)
-					while tempPlaceholder in location:
-						length = len(itemLocal)
-						randomNumber = random.randint(0, length-1)
-						replacement = lines[c].replace(tempPlaceholder, itemLocal[randomNumber], 1)
-						lines[c] = replacement.lstrip(' ')
-						location = lines[c]
-						print("Replaced placeholder with ", itemLocal[randomNumber])
-						if prefs["spoilerLog"] == 1:
-							for entry in spoilerLog:
-								if entry == areaClean:
-									s += 1
-									logIndex = int(spoilerLog.index(entry) + s)
-									logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
-									spoilerLog[logIndex] = logEntry
-						itemLocal.remove(itemLocal[randomNumber])
-					j += 1
+# Item replacement with no exceptions
+			j = 0
+			while j < 10:
+				tempPlaceholder = "placeholdertextomg" + str(j)
+				while tempPlaceholder in location:
+					length = len(itemLocal)
+					randomNumber = random.randint(0, length-1)
+					replacement = lines[c].replace(tempPlaceholder, itemLocal[randomNumber], 1)
+					lines[c] = replacement.lstrip(' ')
+					location = lines[c]
+					print("Replaced placeholder with ", itemLocal[randomNumber])
+					if prefs["spoilerLog"] == 1:
+						for entry in spoilerLog:
+							if entry == areaClean:
+								s += 1
+								logIndex = int(spoilerLog.index(entry) + s)
+								logEntry = spoilerLog[logIndex] + itemLocal[randomNumber] + "\n"
+								spoilerLog[logIndex] = logEntry
+					itemLocal.remove(itemLocal[randomNumber])
+				j += 1
 			c += 1
+# NPC randomization, uses similar code to the item replacement without exceptions but with a different placeholder
 		c = 0
 		for location in lines:
 			if prefs["npcRandomization"] != 0:
@@ -364,12 +374,14 @@ def randomize(dir):
 						NPCLocal.remove(NPCLocal[randomNumber])
 					j += 1
 			c += 1
+# Writing to files
 		openFile.seek(0)
 		openFile.truncate(0)
 		for line in lines:
 			openFile.write(line)
 		openFile.close()
 		print("Successfully randomized ", path)
+# Finishing up, doing final log writes
 	print("Your seed is: ", prefs["customSeed"])
 	if prefs["spoilerLog"] == 1:
 		logPath = os.getcwd() + "\\spoiler.log"

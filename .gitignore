@@ -1,3 +1,6 @@
 .vscode
 spoiler.log
 launch.json
+.vs
+ProjectSettings.json
+slnx.sqlite

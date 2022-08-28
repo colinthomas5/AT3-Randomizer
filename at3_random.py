@@ -11,7 +11,7 @@ fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\overw
 			"\\overworld_wasteland_cave_1.pak", "\\temple_dream_master.pak", "\\temple_fear_master.pak", "\\temple_song_master.pak"]
 
 # Files that could be in fileList but are currently excluded
-#fileListExtras = ["\\global.pak",]
+#fileListExtras = [\\castle_nightmare_master.pak", "\\global.pak",]
 
 # Used for debugging, lists most files within data folder to scout for files that can be added to pooling and randomizing but aren't due to lack of items or NPCs
 #fileListComplete = ["\\arena_hairapes.pak", "\\autoload.pak", "\\15boss_crabdemon.pak", "\\boss_hairapes.pak", "\\boss_nightmare.pak", "\\boss_shadowfinn.pak", "\\castle_basement_master.pak",
@@ -34,11 +34,11 @@ itemListUnused = ["PickupNutStack\0\0\0\0\0", "PickupJake\0\0\0\0\0\0\0\0\0"]
 # Items that are found on in bushes and pots. Although their placements that would be replaced are consistent, they are separated into a different item list so that the user may toggle them off
 itemListExtras = ["PickupHealthOne\0\0\0\0", "PickupFruits\0\0\0\0\0\0\0", "PickupDemonHeart\0\0\0", "PickupNuts\0\0\0\0\0\0\0\0\0", "PickupPieFairy\0\0\0\0\0"]
 
-# List of items to be removed in favor of items from itemListSpecial while using expanded item pool
+# List of items to be removed in favor of items from itemListExpanded while using expanded item pool; Currently depricated in favor of replacing PickupChestItemKey as they are entirely useless outside of dungeons
 itemListReplaced = ["PickupTreasureSmall", "PickupTreasureBig\0\0", "PickupDemonHeart\0\0\0", "PickupNuts\0\0\0\0\0\0\0\0\0", "PickupFruits\0\0\0\0\0\0\0"]
 
 # Items that could be added to the item pool, but are not found within the game via current methods or are only found in the shop, which can't currently be randomized. Used for expanded item pool
-itemListSpecial = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupSlammyHand", "PickupSweater\0\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0\0\0", "PickupEnchiridion"]
+itemListExpanded = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupSlammyHand\0\0\0", "PickupSweater\0\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0\0\0", "PickupEnchiridion\0\0"]
 
 # List of NPCs to check randomization; Null char added to each entry to maintain consistent length of 57
 NPCList = ["Gunter\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_gunter.pak\0\0\0\0\0\0\0\0\0\0\0", "PartyPat\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partypat.pak\0\0\0\0\0\0\0\0\0", "Demon\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_nightospheredemon.pak"
@@ -69,6 +69,7 @@ itemLocal = []
 
 # List of local NPC pool
 NPCLocal = []
+
 
 itemList = []
 
@@ -223,12 +224,12 @@ def randomize(dir):
 		print("Successfully pooled from ", path)
 # Uses expanded item pool if selected
 	if prefs["itemRandomization"] == 2:
-				while len(itemListSpecial) != 0:
+				while len(itemListExpanded) != 0:
 					fillerSpot = itemLocal.index("PickupChestItemKey\0")
-					fillerReplace = itemListSpecial[random.randint(0, len(itemListSpecial)-1)]
+					fillerReplace = itemListExpanded[random.randint(0, len(itemListExpanded)-1)]
 					replacement = itemLocal[fillerSpot].replace("PickupChestItemKey\0", fillerReplace)
 					itemLocal[fillerSpot] = replacement
-					itemListSpecial.remove(fillerReplace)
+					itemListExpanded.remove(fillerReplace)
 # Replaces placeholders with actual items from local item pool
 	for area in fileList:
 		path = dir + area

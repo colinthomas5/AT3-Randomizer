@@ -6,12 +6,12 @@ import sys
 prefs = {}
 
 # List of files to be randomized within data folder
-fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
+fileList = ["\\overworld_forest_cave.pak", "\\overworld_forest_cave_2.pak", "\\overworld_forest_master.pak", "\\overworld_iceking_cave.pak",
 			"\\overworld_kingdom_master.pak", "\\overworld_mountain_cave_1.pak", "\\overworld_mountain_cave_3.pak", "\\overworld_mountain_cave_4.pak", "\\overworld_mountain_master.pak", "\\overworld_swamp_master.pak",
 			"\\overworld_wasteland_cave_1.pak", "\\temple_dream_master.pak", "\\temple_fear_master.pak", "\\temple_song_master.pak"]
 
 # Files that could be in fileList but are currently excluded
-#fileListExtras = [\\castle_nightmare_master.pak", "\\global.pak",]
+#fileListExtras = ["\\castle_nightmare_master.pak", "\\global.pak", "\\overworld_lsp_cave.pak", "\\castle_basement_master.pak"]
 
 # Used for debugging, lists most files within data folder to scout for files that can be added to pooling and randomizing but aren't due to lack of items or NPCs
 #fileListComplete = ["\\arena_hairapes.pak", "\\autoload.pak", "\\15boss_crabdemon.pak", "\\boss_hairapes.pak", "\\boss_nightmare.pak", "\\boss_shadowfinn.pak", "\\castle_basement_master.pak",
@@ -26,9 +26,9 @@ fileList = ["\\overworld_lsp_cave.pak", "\\castle_basement_master.pak", "\\overw
 # List of items to check randomization; Null char added to each entry to maintain a consistent length of 19
 defaultItemList = ["PickupChestItemKey\0", "PickupTreasureHuge\0", "PickupTrailMix\0\0\0\0\0", "PickupSpareThumps\0\0", "PickupTrailMix3\0\0\0\0", "PickupMeat\0\0\0\0\0\0\0\0\0", "PickupHeartPiece\0\0\0", 
 			"PickupPencil\0\0\0\0\0\0\0", "PickupSweater\0\0\0\0\0\0", "PickupMapPaper\0\0\0\0\0", "PickupChestItemRBK\0", "PickupTreasureSmall", "PickupTreasureBig\0\0",
-			"PickupGumGlobe\0\0\0\0\0", "PickupWoodPlank\0\0\0\0", "PickupPlasticBag\0\0\0", "PickupFruitStack\0\0\0", "PickupHeroGauntlet\0", "PickupTrailMix1\0\0\0\0", "PickupTrailMix2\0\0\0\0", "PickupTrailMix3\0\0\0\0", "PickupTrailMix4\0\0\0\0", "PickupGrabbyHand\0\0\0",]
+			"PickupGumGlobe\0\0\0\0\0", "PickupWoodPlank\0\0\0\0", "PickupPlasticBag\0\0\0", "PickupFruitStack\0\0\0", "PickupHeroGauntlet\0", "PickupTrailMix1\0\0\0\0", "PickupTrailMix2\0\0\0\0", "PickupTrailMix4\0\0\0\0", "PickupGrabbyHand\0\0\0"]
 	
-# List of items that work when put into the game, however are not found to be pooled as well as are not worth putting into itemsListSpecial
+# List of items that work when put into the game, however are not found to be pooled as well as are not worth putting into itemsListExpanded
 itemListUnused = ["PickupNutStack\0\0\0\0\0", "PickupJake\0\0\0\0\0\0\0\0\0"]
 
 # Items that are found on in bushes and pots. Although their placements that would be replaced are consistent, they are separated into a different item list so that the user may toggle them off
@@ -39,6 +39,13 @@ itemListReplaced = ["PickupTreasureSmall", "PickupTreasureBig\0\0", "PickupDemon
 
 # Items that could be added to the item pool, but are not found within the game via current methods or are only found in the shop, which can't currently be randomized. Used for expanded item pool
 itemListExpanded = ["PickupFlambo\0\0\0\0\0\0\0", "PickupBananarang\0\0\0", "PickupLadyRing\0\0\0\0\0", "PickupSlammyHand\0\0\0", "PickupSweater\0\0\0\0\0\0", "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0\0\0", "PickupEnchiridion\0\0"]
+
+# List of all items that can be toggled on and off when using custom item pool
+itemListCustom = ["PickupTreasureSmall", "PickupTreasureBig\0\0", "PickupTreasureHuge\0", "PickupPencil\0\0\0\0\0\0\0", "PickupMapPaper\0\0\0\0\0", "PickupChestItemKey\0", "PickupChestItemRBK\0",
+				  "PickupPlasticBag\0\0\0", "PickupTrailMix\0\0\0\0\0", "PickupTrailMix1\0\0\0\0", "PickupTrailMix2\0\0\0\0", "PickupTrailMix3\0\0\0\0", "PickupTrailMix4\0\0\0\0",  "PickupSpareThumps\0\0", 
+				  "PickupHeartPiece\0\0\0", "PickupGumGlobe\0\0\0\0\0", "PickupWoodPlank\0\0\0\0", "PickupFruits\0\0\0\0\0\0\0", "PickupFruitStack\0\0\0", "PickupNuts\0\0\0\0\0\0\0\0\0", "PickupDemonHeart\0\0\0", "PickupHealthOne\0\0\0\0",
+				  "PickupBananarang\0\0\0", "PickupGrabbyHand\0\0\0", "PickupFlambo\0\0\0\0\0\0\0", "PickupHeroGauntlet\0", "PickupLadyRing\0\0\0\0\0", "PickupSlammyHand\0\0\0", "PickupSweater\0\0\0\0\0\0",  
+				  "PickupLoveNote\0\0\0\0\0", "PickupHeatSignature", "PickupMindGames\0\0\0\0", "PickupFanfiction\0\0\0", "PickupEnergyDrink\0\0", "PickupBugMilk\0\0\0\0\0\0", "PickupEnchiridion\0\0"]
 
 # List of NPCs to check randomization; Null char added to each entry to maintain consistent length of 57
 NPCList = ["Gunter\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_gunter.pak\0\0\0\0\0\0\0\0\0\0\0", "PartyPat\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partypat.pak\0\0\0\0\0\0\0\0\0", "Demon\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_nightospheredemon.pak"
@@ -92,8 +99,12 @@ nr = npc_group.add_mutually_exclusive_group(required=True)
 nr.add_argument("-nnr", "--no-npcs-randomization", help="Do not randomize NPCs", action="store_true")
 nr.add_argument("-snr", "--standard-npcs-randomization", help="Use standard method of randomizing NPCs", action="store_true")
 nr.add_argument("-cnr", "--custom-npcs-randomization", help="Use custom NPC pool to randomize NPCs", action="store_true")
+nr.add_argument("-gunt", "--gunter-insanity", help="Turns the NPCs to be randomized into Gunter", action="store_true", required=False)
 npc_group.add_argument("-cn", "--custom-npcs", help="The custom NPC pool to use (comma terminated)", type=str, required=False)
 parser.add_argument("-spl", "--spoiler-log", help="Output a spoiler log", action="store_true", default=False)
+parser.add_argument("-lsp", "--lsp-cave-randomization", help="Randomize the LSP Cave area", action="store_true", default=False)
+parser.add_argument("-ntmr", "--nightmare-castle-randomization", help="Randomize the Nightmare Castle area", action="store_true", default=False)
+parser.add_argument("-bsmt", "--castle-basement-randomization", help="Randomize the Castle Basement area", action="store_true", default=False)
 args = parser.parse_args()
 print("Randomizing " + args.folder + "...")
 dir = args.folder
@@ -128,6 +139,8 @@ if args.standard_npcs_randomization == True:
 if args.custom_npcs_randomization == True:
 	prefs["npcRandomization"] = 2
 	# not implemented yet
+if args.gunter_insanity == True:
+	prefs["npcRandomization"] = 3
 if args.spoiler_log == True:
 	prefs["spoilerLog"] = 1
 	logPath = os.getcwd() + "\\spoiler.log"
@@ -137,13 +150,18 @@ if args.spoiler_log == True:
 	spoilerLog.append(logSeed)
 else:
 	prefs["spoilerLog"] = 0
-
+if args.lsp-cave-randomization == True:
+	prefs["lspCaveRando"] == 1
+	fileList.append("\\overworld_lsp_cave.pak")
+if args.nightmare-castle-randomization == True:
+	fileList.append("\\castle_nightmare_master.pak")
+	itemListExpanded.remove[itemListExpanded.index("PickupSweater\0\0\0\0\0\0")]
+if args.castle-basement-randomization == True:
+	fileList.append("\\castle_basement_master.pak")
 
 # Builds local item pool while replacing items with placeholder text to be changed into randomized items; item placeholder text named to have length of 19; npc placeholder text named to have a length of 57
 def randomize(dir):
 	random.seed(prefs["customSeed"])
-	if prefs["itemLogic"] != 0:
-		fileList.remove("\\overworld_lsp_cave.pak")
 	for area in fileList:
 		path = dir + area
 		print("Now generating pool from: ", path)
@@ -157,16 +175,16 @@ def randomize(dir):
 			placeholder = "placeholdertextomg0"
 			for location in lines:
 				beenHere = c
-# This exception about castle_nightmare_master.pak is currently depricated due to castle_nightmare_master.pak being taken out of standard map pool and PickupSweater being moved to expanded item pool
-				if area == "\\castle_nightmare_master.pak" and prefs["itemLogic"] != 0:
-					while "PickupSweater\0\0\0\0\0\0" in location:
-						itemLocal.append("PickupSweater\0\0\0\0\0\0")
-						replacement = lines[c].replace("PickupSweater\0\0\0\0\0\0", placeholder, 1)
-						lines[c] = replacement.lstrip('')
-						location = lines[c]
-						print("Added PickupSweater\0\0\0\0\0\0 to item pool")
-						if prefs["spoilerLog"] == 1:
-							spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
+# This exception about castle_nightmare_master.pak is currently depricated due to args(nightmare-castle-randomization)
+#				if area == "\\castle_nightmare_master.pak" and prefs["itemLogic"] != 0:
+#					while "PickupSweater\0\0\0\0\0\0" in location:
+#						itemLocal.append("PickupSweater\0\0\0\0\0\0")
+#						replacement = lines[c].replace("PickupSweater\0\0\0\0\0\0", placeholder, 1)
+#						lines[c] = replacement.lstrip('')
+#						location = lines[c]
+#						print("Added PickupSweater\0\0\0\0\0\0 to item pool")
+#						if prefs["spoilerLog"] == 1:
+#							spoilerLog.append("PickupSweater\0\0\0\0\0\0 -> ")
 # Currently unused shop randomization, functions however other factors in the game prevent it from being usable
 #				elif area == "\\global.pak":
 #					for item in shopList:
@@ -179,20 +197,20 @@ def randomize(dir):
 #							if spoiler is 1:
 #								i = item.ljust(19, "\0") + " ->  "
 #								spoilerLog.append(i)
-				else:
+#				else:
 # Takes items from desired items to be randomized and replaces them with a placeholder while adding them to the item pool
-					for item in itemList:
-						while item in location:
-							placeholder = "placeholdertextomg" + str(beenHere - c)
-							itemLocal.append(item.ljust(19))
-							replacement = lines[c].replace(item, placeholder, 1)
-							lines[c] = replacement.lstrip('')
-							location = lines[c]
-							print("Added ", item, " to item pool")
-							if prefs["spoilerLog"] == 1:
-								i = item + " ->  "
-								spoilerLog.append(i)
-							beenHere += 1
+				for item in itemList:
+					while item in location:
+						placeholder = "placeholdertextomg" + str(beenHere - c)
+						itemLocal.append(item.ljust(19))
+						replacement = lines[c].replace(item, placeholder, 1)
+						lines[c] = replacement.lstrip('')
+						location = lines[c]
+						print("Added ", item, " to item pool")
+						if prefs["spoilerLog"] == 1:
+							i = item + " ->  "
+							spoilerLog.append(i)
+						beenHere += 1
 				c += 1
 # Takes NPCs and replaces them with a placeholder while adding them to the item pool
 		if prefs["npcRandomization"] != 0:
@@ -230,6 +248,12 @@ def randomize(dir):
 					replacement = itemLocal[fillerSpot].replace("PickupChestItemKey\0", fillerReplace)
 					itemLocal[fillerSpot] = replacement
 					itemListExpanded.remove(fillerReplace)
+# If Guntsanity is enabled, replaces all NPCs within pool with Gunter
+	if prefs["npcRandomization"] == 3:
+		c = 0
+		for npc in NPCLocal:
+			NPCLocal[c] = "Gunter\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_gunter.pak\0\0\0\0\0\0\0\0\0\0\0"
+			c += 1
 # Replaces placeholders with actual items from local item pool
 	for area in fileList:
 		path = dir + area
@@ -243,13 +267,16 @@ def randomize(dir):
 		s = 0
 		for location in lines:
 			if prefs["itemLogic"] != 0 and prefs["itemRandomization"] != 0:
-# This exception about castle_nightmare_master.pak is currently depricated due to castle_nightmare_master.pak being taken out of standard map pool and PickupSweater being moved to expanded item pool
+# This exception about castle_nightmare_master.pak is to prevent key items from being within Nightmare Castle to allow seeds with logic that randomize this area to be beatable; expanded items are not prevented from being placed here as their inclusion in the pool does not decide a seed's completability; Slammy Hand is prevented from being placed here if LSP cave if randomized to allow for a seed to be completed
 				if area == "\\castle_nightmare_master.pak":
 					while "placeholdertextomg0" in location:
 						length = len(itemLocal)
 						randomNumber = random.randint(0, length-1)
 						while itemLocal[randomNumber] == "PickupGrabbyHand\0\0\0" or itemLocal[randomNumber] == "PickupHeroGauntlet\0":
 							randomNumber = random.randint(0, length-1)
+							if prefs["lspCaveRando"] == 1:
+								while itemLocal[randomNumber] == "PickupSlammyHand\0\0\0":
+									randomNumber = random.randint(0, length-1)
 						replacement = lines[c].replace("placeholdertextomg0", itemLocal[randomNumber], 1)
 						lines[c] = replacement.lstrip(' ')
 						location = lines[c]

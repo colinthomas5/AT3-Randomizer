@@ -1,3 +1,12 @@
 .vscode
 spoiler.log
 launch.json
+.vs
+ProjectSettings.json
+slnx.sqlite
+at3 random.pyproj
+at3 random.sln
+at3random.spec
+at3_random.spec
+
+__pycache__

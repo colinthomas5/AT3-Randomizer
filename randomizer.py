@@ -55,6 +55,7 @@ def randomize(dir, prefs, fileList, spoilerLog, itemList, itemLocal, itemListExp
 							spoilerLog.append(i)
 						beenHere += 1
 				c += 1
+			itemLocal.sort()
 # Takes NPCs and replaces them with a placeholder while adding them to the item pool
 		if prefs["npcRandomization"] != 0:
 			c = 0
@@ -74,6 +75,7 @@ def randomize(dir, prefs, fileList, spoilerLog, itemList, itemLocal, itemListExp
 							spoilerLog.append(n)
 						beenHere += 1
 				c += 1
+			NPCLocal.sort()
 # Writing to files
 		if prefs["spoilerLog"] == 1:
 			spoilerLog.append( "\n")

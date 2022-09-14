@@ -25,13 +25,16 @@ To randomize your AT3 copy using the current at3_random.py, launch parameters ar
 -f (data folder path) -> Selects the AT3 data folder to be randomized
 -s (seed) -> Seed; if not included, chooses a random seed which is provided in the spoiler log
 -spl -> Spoiler log (if not included within launch parameters, spoiler log will not be generated)
+
 Item Randomization:
 -nir -> No item randomization
 -sir -> Standard item randomization
 -eir -> Expanded item randomization (replaces randomized keys with key items noramlly not in the randomized item pool)
+
 Item Logic:
 -nl -> No logic (not recommended without expanded item randomization as gives higher chance for no logic seed to be beatable)
 -sl -> Standard logic (no gauntlets under rocks, no flambo/grabby hands under dead trees)
+
 NPC Randomization:
 -nnr -> No NPC randomization
 -snr -> Standard NPC randomization

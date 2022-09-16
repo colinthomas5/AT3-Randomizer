@@ -19,7 +19,7 @@ To randomize your AT3 copy using one of the alpha releases...
 
 # Randomization (Recent Python Script)
 
-To randomize your AT3 copy using the current at3_random.py, launch parameters are required to be set to allow the randomizer script to know the randomization preferences:
+To randomize your AT3 copy using the current main.py, launch parameters are required to be set to allow the randomizer script to know the randomization preferences:
 
 ```
 -f (data folder path) -> Selects the AT3 data folder to be randomized

@@ -60,7 +60,9 @@ NPCList2 = [bytes.fromhex("44656D6F6E0000000000000000000000000000000000000000000
 			bytes.fromhex("4D616769634D616E0000000000000000000000000000000000000000000000006E70635F6D616769636D616E2E70616B000000000000000000").decode("latin-1"), # Magic Man entry in NPCList
 			bytes.fromhex("547265655472756E6B73000000000000000000000000000000000000000000006E70635F747265657472756E6B732E70616B00000000000000").decode("latin-1"), # Tree Trunks entry in NPCList
 			bytes.fromhex("57697A61726454686965660000000000000000000000000000000000000000006E70635F77697A61726474686965662E70616B000000000000").decode("latin-1"), # Wizard Thief entry in NPCList
-			bytes.fromhex("436F616C4D616E000000000000000000000000000000000000000000000000006E70635F636F616C6D616E2E70616B00000000000000000000").decode("latin-1")] # Coal Man entry in NPCList
+			bytes.fromhex("436F616C4D616E000000000000000000000000000000000000000000000000006E70635F636F616C6D616E2E70616B00000000000000000000").decode("latin-1"), # Coal Man entry in NPCList
+			bytes.fromhex("50617274795061740000000000000000000000000000000000000000000000006E70635F70617274797061742E70616B000000000000000000").decode("latin-1"), # Party Pat entry in NPCList (required for Prismo)
+			bytes.fromhex("5374616E6C6579000000000000000000000000000000000000000000000000006E70635F7374616E656C792E70616B00000000000000000000").decode("latin-1")] # Stanley entry in NPCList (required for Prismo)
 
 # Files that could be in NPCList but are currently excluded
 #NPCListExtras = ["PartyBear1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partybear1.pak\0\0\0\0\0\0\0", "PartyBear2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partybear2.pak\0\0\0\0\0\0\0", "PartyBear3\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0npc_partybear3.pak\0\0\0\0\0\0\0",
@@ -108,6 +110,6 @@ parser.add_argument("-bsmt", "--castle-basement-randomization", help="Randomize 
 
 prefs, log, spoilerLog, itemList = parseOptions(parser.parse_args(), defaultItemList, fileList, itemListExpanded)
 
-randomize(prefs["dir"], prefs, fileList, spoilerLog, itemList, itemLocal, itemListReplaced, NPCList, NPCList2, NPCLocal)
+randomize(prefs["dir"], prefs, sorted(fileList), spoilerLog, itemList, itemLocal, itemListExpanded, NPCList, NPCList2, NPCLocal)
 
 input("Randomization complete! Press enter or exit the window to close.")

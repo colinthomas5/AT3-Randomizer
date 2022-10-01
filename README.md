@@ -48,3 +48,7 @@ If you have any feature suggestions or find any bugs, here is where you can find
 • Twitter: @chatterteethsrc
 • Discord: colin#0615
 ```
+
+## License
+
+This project is licensed under the [MIT](LICENSE) license.

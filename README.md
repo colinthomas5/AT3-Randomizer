@@ -6,18 +6,7 @@ Item randomizer for Adventure Time: Secret of the Nameless Kingdom.
 
 In preparation to randomize your AT3 copy, backup your vanilla data folder from your AT3 installation for when you wish to return to a vanilla game state. Alternatively, you may clone your AT3 installation and dedicate one installation to the vanilla game and one installation to randomizer.
 
-## Randomization (Alpha Releases)
-
-To randomize your AT3 copy using one of the alpha releases...
-
-```
-• Run at3_random.exe
-• Point the program to the data folder you wish to randomize
-• Give seed and spoiler log preferences
-• The program will randomize the item location data within the data folder
-```
-
-# Randomization (Recent Python Script)
+# Randomization
 
 To randomize your AT3 copy using the current main.py, launch parameters are required to be set to allow the randomizer script to know the randomization preferences:
 
@@ -46,7 +35,7 @@ If you have any feature suggestions or find any bugs, here is where you can find
 
 ```
 • Twitter: @chatterteethsrc
-• Discord: colin#0615
+• Discord: chatterteeth
 ```
 
 ## License

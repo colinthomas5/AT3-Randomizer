@@ -49,7 +49,7 @@ NPCList2 = [bytes.fromhex("44656D6F6E0000000000000000000000000000000000000000000
 logList0 = ["Nameless Castle Basement Key Chest", "Nameless Castle Basement Treasure Chest"]
 
 # List of readable spoiler log entries for \\castle_nightmare_master.pak
-logList1 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28"]
+logList1 = ["Nightmare Castle Huge Treasure 1", "Nightmare Castle Huge Treasure 2", "Nightmare Castle TrailMix1", "Nightmare Castle Huge Treasure 3", "Nightmare Castle Huge Treasure 4", "Nightmare Castle Spare Thumps 1", "Nightmare Castle TrailMix3", "Nightmare Castle Key 1", "Nightmare Castle Key 2", "Nightmare Castle Key 3", "Nightmare Castle Key 4", "Nightmare Castle Key 5", "Nightmare Castle Meat", "Nightmare Castle Thump Shard", "Nightmare Castle Pencil Chest", "Nightmare Castle Like Like Sweater Chest", "Nightmare Castle Map Paper Chest", "Nightmare Castle Key 6", "Nightmare Castle Key 7", "Nightmare Castle Key 8", "Nightmare Castle Key 9", "Nightmare Castle Really Big Key Chest", "Nightmare Castle Small Treasure 1", "Nightmare Castle Small Treasure 2", "Nightmare Castle Small Treasure 3", "Nightmare Castle Big Treasure 1", "Nightmare Castle Big Treasure 2", "Nightmare Castle Big Treasure 3", "Nightmare Castle Big Treasure 4"]
 
 # List of readable spoiler log entries for \\overworld_forest_cave.pak; Only in map pool due to presense of NPC, so no spoiler log entries present
 logList2 = []
@@ -88,10 +88,10 @@ logList12 = ["Fear Swamp Broken Bridge Chest", "Fear Swamp Temple Outskirts Dry 
 logList13 = ["Fear Swamp Gunter Cave Chest"]
 
 # List of readable spoiler log entries for \\temple_dream_master.pak
-logList14 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"]
+logList14 = ["Dream Temple 2F Ledge Key Chest", "Dream Temple Key 2", "Dream Temple 1F Switch Room Huge Treasure Chest", "Dream Temple Huge Treasure 2", "Drem Temple Spare Thumps", "Dream Temple 1F Pencil Chest", "Dream Temple 1F Map Paper Chest", "Dream Temple 2F Fruit Stack Chest", "Dream Temple Key 3", "Dream Temple 1F Main Room Right Key Chest", "Dream Temple Key 5", "Dream Temple Huge Reasure 3", "Dream Temple 1F Really Big Key Chest", "Dream Temple 1F Hero Gauntlet Chest", "Dream Temple Key 6", "Dream Temple 4F Gum Globe Chest", "Dream Temple TrailMix1", "Dream Temple 3F Pressure Plate Room Key Chest", "Dream Temple Key 8", "Dream Temple 2F West Huge Treasure Chest", "Dream Temple Big Treasure"]
 
 # List of readable spoiler log entries for \\temple_fear_master.pak
-logList15 = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+logList15 = ["Fear Temple Key 1", "Fear Temple Pencil Chest", "Fear Temple Map Paper Chest", "Fear Temple Really Big Key Chest", "Fear Temple Gum Globe", "Fear Temple Spare Thumps", "Fear Temple Fruit Stack 1", "Fear Temple TrailMix2", "Fear Temple Fruit Stack 2", "Fear Temple TrailMix3"]
 
 # List of readable spoiler log entries for \\temple_song_master.pak
 logList16 = ["Song Temple 1F Ledge Key Chest", "Song Temple 1F Box Room Key Chest", "Song Temple 1B Puzzle Room Key Chest", "Song Temple 1B Pencil Chest", "Song Temple 1F Map Paper Chest", "Song Temple 2F Really Big Key Chest", "Song Temple 1B Grabby Hand Chest", "Song Temple 1F Gum Globe Chest", "Song Temple 2F Huge Treasure Chest", "Song Temple 1F Huge Treasure Chest", "Song Temple 2F Sleeping Magi Room Key Chest", "Song Temple 2F Sleeping Magi Room Small Treasure Chest"]

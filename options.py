@@ -8,11 +8,9 @@ def parseOptions(args, defaultItemList, fileList, itemListExpanded):
 	logSettingsMapCount = 0
 	print("Randomizing " + args.folder + "...")
 	prefs["dir"] = args.folder
-	if args.seed == "":
+	if args.seed == None:
 		args.seed = random.random()
-		prefs["customSeed"] = args.seed
-	else:
-		prefs["customSeed"] = args.seed
+	prefs["customSeed"] = args.seed
 	if args.no_items_randomization == True:
 		prefs["itemRandomization"] = 0
 		itemRandoText = "None"
@@ -58,7 +56,7 @@ def parseOptions(args, defaultItemList, fileList, itemListExpanded):
 		logSettingsMapCount += 1
 	if args.nightmare_castle_randomization == True:
 		fileList.append("\\castle_nightmare_master.pak")
-		itemListExpanded.remove[itemListExpanded.index("PickupSweater\0\0\0\0\0\0")]
+		itemListExpanded.remove("PickupSweater\0\0\0\0\0\0")
 		if logSettingsMapCount > 0:
 			logSettingsMap += ", Nightmare Castle"
 		else:
@@ -71,25 +69,31 @@ def parseOptions(args, defaultItemList, fileList, itemListExpanded):
 		else:
 			logSettingsMap += "Castle Basement"
 		logSettingsMapCount += 1
+	logPath = os.getcwd() + "\\spoiler.log"
+	log = open(logPath, 'w')
+	logSeed = "Seed: " + str(prefs["customSeed"]) + "\n"
+	logSettingsItem = "Item Randomization Mode: " + itemRandoText + "\n"
+	logSettingsNPC = "NPC Randomization Mode: " + npcRandoText + "\n"
+	if logSettingsMapCount == 0:
+		logSettingsMap = "Standard Map Pool \n\n"
+	else:
+		logSettingsMap += "\n\n"
+	spoilerLog = []
+	spoilerLog.append(logSeed)
+	spoilerLog.append(logSettingsItem)
+	if prefs["itemRandomization"] != 0:
+		logSettingsItemLogic = "Item Randomization Logic: " + itemLogicText + "\n"
+		spoilerLog.append(logSettingsItemLogic)
+	spoilerLog.append(logSettingsNPC)
+	spoilerLog.append(logSettingsMap)
 	if args.spoiler_log == True:
 		prefs["spoilerLog"] = 1
-		logPath = os.getcwd() + "\\spoiler.log"
 		log = open(logPath, 'w')
-		logSeed = "Seed: " + prefs["customSeed"] + "\n"
-		logSettingsItem = "Item Randomization Mode: " + itemRandoText + "\n"
-		logSettingsNPC = "NPC Randomization Mode: " + npcRandoText + "\n"
-		if logSettingsMapCount == 0:
-			logSettingsMap = "Standard Map Pool \n\n"
-		else:
-			logSettingsMap += "\n\n"
-		spoilerLog = []
-		spoilerLog.append(logSeed)
-		spoilerLog.append(logSettingsItem)
-		if prefs["itemRandomization"] != 0:
-			logSettingsItemLogic = "Item Randomization Logic: " + itemLogicText + "\n"
-			spoilerLog.append(logSettingsItemLogic)
-		spoilerLog.append(logSettingsNPC)
-		spoilerLog.append(logSettingsMap)
 	else:
 		prefs["spoilerLog"] = 0
+		log = None
+	if args.headless == True:
+		prefs["headless"] = 1
+	if args.log_test == True:
+		prefs["logTest"] = 1
 	return prefs, log, spoilerLog, itemList

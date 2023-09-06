@@ -94,6 +94,10 @@ def parseOptions(args, defaultItemList, fileList, itemListExpanded):
 		log = None
 	if args.headless == True:
 		prefs["headless"] = 1
+	else:
+		prefs["headless"] = 0
 	if args.log_test == True:
 		prefs["logTest"] = 1
+	else:
+		prefs["logTest"] = 0
 	return prefs, log, spoilerLog, itemList
